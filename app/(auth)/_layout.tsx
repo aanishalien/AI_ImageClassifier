@@ -8,7 +8,7 @@ const Layout = () =>{
         <SafeAreaProvider>
             <PaperProvider>
                 <Stack>
-                    <Stack.Screen name="regiser" options={{headerShown:false}}/>
+                    <Stack.Screen name="register" options={{headerShown:false}}/>
                     <Stack.Screen name="index" options={{headerShown:false}}/>
                     <Stack.Screen name="welcome" options={{headerShown:false}}/>
 
