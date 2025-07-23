@@ -9,6 +9,7 @@ export default function TabLayout() {
             <PaperProvider>
                 <Stack>
                     <Stack.Screen name="uploadimage" options={{headerShown:false}}/>
+                    <Stack.Screen name="imageclassy" options={{headerShown:false}}/>
                 </Stack>
             </PaperProvider>
         </SafeAreaProvider>

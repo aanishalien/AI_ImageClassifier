@@ -3,20 +3,28 @@ import { View ,Text, StyleSheet, Alert, TouchableOpacity, Image} from "react-nat
 import NavBar from "@/components/NavBar";
 import * as ImagePicker from "expo-image-picker"
 import  Icon  from "react-native-vector-icons/FontAwesome";
+import { useRouter } from "expo-router";
+
 
 export default function UploadImage() {
 
+    //Router for navigation
+    const router = useRouter();
+
     //Stores the selected image URL
-    const [file, setFile] = useState(null);
+    const [file, setFile] = useState<string | null>(null);
 
     //Stores any error message
     const [error, setError] = useState(null);
 
+
+    const [loading, setLoading] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(false);
     //Function to pick an image from 
     // the device's media library
 
     const pickImage = async () => {
-        const {status} = await ImagePicker.requestCameraPermissionsAsync();
+        const {status} = await ImagePicker.requestMediaLibraryPermissionsAsync();
         
         if (status !== "granted"){
             //If permission is denied , show an alert
@@ -29,12 +37,25 @@ export default function UploadImage() {
 
         } else{
             const result = 
-            await ImagePicker.launchImageLibraryAsync();
+            await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing:true,
+                aspect:[1,1],
+                quality:1,
+                base64:true,
+            });
 
-            if (!result.canceled) {
-                const uri = result.assets[0].uri;
-                console.log("Image URL:" , uri)
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                const base64 = result.assets[0].base64;
+                const uri = `data:image/jpeg;base64,${base64}`;
+                
+
+                router.push({
+                    pathname:'/(tabs)/imageclassy',
+                    params: { uri},
+                })
             } else{
+                setLoading(false);
                 console.log("Image selection canceled.")
             }
         }
@@ -46,8 +67,12 @@ export default function UploadImage() {
             <Text style={styles.heading}>Image Classification</Text>
                 <Text style={styles.text}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</Text>
             <View style={styles.bottomSection}>
+                
                 <Text style={styles.heading}>Add Image:</Text>
-                <Icon name="cloud-upload" size={20} color="#fff"/>
+                <View style={styles.iconContainer}>
+                    <Icon name="cloud-upload" size={25} color="#fff"/>
+                </View>
+                
                 <TouchableOpacity style={styles.button} onPress={pickImage}>
                     <Text style={styles.buttonText}>Choose Image</Text>
                     
@@ -134,10 +159,7 @@ const styles = StyleSheet.create({
         borderRadius:8
     },
     iconContainer:{
-        width:100,
-        height:100,
-        justifyContent:'center',
         alignItems:'center',
-        borderRadius:10
+        justifyContent:'center',
     }
 })
