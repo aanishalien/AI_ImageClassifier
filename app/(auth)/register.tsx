@@ -2,14 +2,38 @@ import { View, Image, StyleSheet, TouchableOpacity,Text,TextInput} from 'react-n
 import React,{useState} from 'react'
 import { router } from 'expo-router'
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view"
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Button } from 'react-native-paper';
 
-export default function Register(){
 
+export default function Register({navigation}){
     const [email,setEmail] = useState('');
     const [password, setPassword] = useState('')
  
-    const handleLogin =()=>{
-        console.log('Logging in with:' , email, password)
+    const handleLogin = async() =>{
+        try{
+            const response = await axios.post("http://192.168.8.116:8000/api/v1/users",{
+                email,
+                password
+            });
+            console.log("Response:", response.data);
+
+            const message = response.data.message?.trim();
+
+            if (message ==="User created successfully" || message === "Logged in successfully"){
+                router.push('/(tabs)/uploadimage');
+            } else{
+                alert(response.data.message || "Registration failed. Please try again.");
+            }
+           
+            
+            
+
+        } catch(error) {
+            console.error("Login error:", error);
+            alert("Login failed. Please try again.");
+        }
     }
 
     return (
@@ -31,9 +55,11 @@ export default function Register(){
                         <Text style={styles.subheading}>Password</Text>
                         <TextInput style={styles.TextInput} onChangeText={setPassword} value={password} placeholder='Password'/>
 
-                        <TouchableOpacity style={styles.button} onPress={() => router.navigate('/(tabs)/uploadimage')}>
-                            <Text style={styles.buttonText} onPress={handleLogin}>Login</Text>
-                        </TouchableOpacity>
+                        <Button style={styles.button} onPress={handleLogin}>
+                            <Text >Login</Text>
+                        </Button>
+
+                        
                     </View>
                 </View>
             </View>

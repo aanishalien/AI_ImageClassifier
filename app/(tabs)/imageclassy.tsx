@@ -25,7 +25,7 @@ export default function Imageclassy(){
         
 
         try{
-            const response = await fetch("http://192.168.43.137:8000/api/v1/images/predict",{
+            const response = await fetch("http://192.168.8.116:8000/api/v1/images/predict",{
                 method:"POST",
                 body:formData,
                 headers:{
